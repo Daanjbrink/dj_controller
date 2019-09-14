@@ -11,7 +11,7 @@ void expInit()
 {
 	PCICR = (1<<PCIE2); // Enable pin change interrupt on pins PC0..7
 	PCMSK2 = 0xFF; // Enable pin change mask on pins PC0..7
-	
+
 	for(uint8_t i = 0; i != nEXP; i++)
 		_mcp23s17IOCON(EXP0+i, (1<<5)); // set SEQOP bit
 
@@ -20,11 +20,11 @@ void expInit()
 		_mcp23s17IOPU(EXP0+i, BOTH, 0xFF); // Enable internal pull ups on every pin
 		_mcp23s17INTEN(EXP0+i, BOTH, 0xFF); // Enable interrupt-on-change on every pin
 	}
-		
+
 	// Rotary encoders EXP3
 	_mcp23s17IOPU(EXP3, B, 0xFF); // Enable internal pull ups on deck B every pin
 	_mcp23s17INTEN(EXP3, BOTH, 0xFF); // Enable interrupt-on-change on every pin
-	
+
 	// Init current encoder state
 	encoderState[0] = expReadPin(EXP3, 2);
 	encoderState[1] = expReadPin(EXP3, 4);
@@ -48,8 +48,8 @@ uint8_t expReadPin(uint8_t exp, uint8_t pin)
 
 // ISRs should be short but since this one isn't, optimize always
 __attribute__((optimize("O3"))) ISR(PCINT2_vect)
-{	
-	// Check which interrupt pin caused the interrupt
+{
+	// Check which IO expander pin caused the interrupt
 	uint8_t exp = 0, ab = 0;
 	if(PINC&1){
 		exp = EXP0;

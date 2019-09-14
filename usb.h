@@ -11,7 +11,7 @@ struct USBDATA {
 	uint8_t enc[3];		// 0 = left side, 1 = right side, 2 = mid side
 } usbdata;
 
-uint8_t usbBuffer[52];
+uint8_t usbBuffer[51];
 
 void usbBtnUpdate(uint8_t exp, uint8_t pin);
 void usbAdcUpdate(uint8_t adc, uint8_t channel);

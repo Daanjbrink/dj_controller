@@ -13,21 +13,27 @@ static uint8_t byteArrayToByte(uint8_t *array)
 	return tmp;
 }
 
+void usbInit()
+{
+	_max3421eInit();
+}
+
+// Map IO expander number and pin number to usb buffer index
+// Every IO expander takes 2 bytes to store its button states
 void usbBtnUpdate(uint8_t exp, uint8_t pin)
 {
-	// Map expansion IC number and pin number to usb buffer index
-	uint8_t a = 0, b = 0;	
+	uint8_t a = 0, b = 0;
 	if(pin >= 8 && pin <= 15){
-		a = 1;
-		b = 8;
+		a = 1; // First array index
+		b = 8; // Second array index offset 8
 	}
 	usbBuffer[(exp*2)+a] = byteArrayToByte(&usbdata.btn[exp][b]);
 }
 
+// ADC expansion IC number and channel number to usb buffer index
 void usbAdcUpdate(uint8_t adc, uint8_t channel)
 {
-	// usbBuffer adc base index
-	uint8_t i = 0;
+	uint8_t i = 0; // i is the array index
 	if(adc == 0)
 		i = 10;
 	else if(adc == 1)
@@ -35,7 +41,7 @@ void usbAdcUpdate(uint8_t adc, uint8_t channel)
 	else if(adc == 2)
 		i = 36;
 
-	i += 2*channel; // Get usbBuffer adc index
+	i += 2*channel; // Every channel takes 2 bytes
 
 	usbBuffer[i] = usbdata.adc[adc][channel];
 	usbBuffer[i+1] = usbdata.adc[adc][channel]>>8;
@@ -43,33 +49,33 @@ void usbAdcUpdate(uint8_t adc, uint8_t channel)
 
 void usbWriteBuffer()
 {
-	
+	_max3421eWriteBulk(2, usbBuffer, sizeof(usbBuffer));
 }
 
 /*void usbWriteStruct()
 {
 	// https://www.virtualdj.com/wiki/HIDImplementation.html
-	
+
 	// Left deck push buttons - 16 buttons
 	usbBuffer[0] = byteArrayToByte(&usbdata.btn[0][0]);
 	usbBuffer[1] = byteArrayToByte(&usbdata.btn[0][8]);
-	
+
 	// Right deck push buttons - 16 buttons
 	usbBuffer[2] = byteArrayToByte(&usbdata.btn[1][0]);
 	usbBuffer[3] = byteArrayToByte(&usbdata.btn[1][8]);
-	
+
 	// Middle deck push buttons - 14 buttons
 	usbBuffer[4] = byteArrayToByte(&usbdata.btn[2][0]);
-	usbBuffer[5] = byteArrayToByte(&usbdata.btn[2][8]); 
-	
+	usbBuffer[5] = byteArrayToByte(&usbdata.btn[2][8]);
+
 	// Rotary encoder clicks - 4 buttons
 	usbBuffer[6] = byteArrayToByte(&usbdata.btn[3][8]);
-	
+
 	// Rotary encoders - 3 encoders
 	usbBuffer[7] = usbdata.enc[0];
 	usbBuffer[8] = usbdata.enc[1];
 	usbBuffer[9] = usbdata.enc[2];
-	
+
 	// Left deck pots - 7 pots
 	usbBuffer[10] = usbdata.adc[0][0];
 	usbBuffer[11] = usbdata.adc[0][0]>>8;
@@ -85,7 +91,7 @@ void usbWriteBuffer()
 	usbBuffer[21] = usbdata.adc[0][5]>>8;
 	usbBuffer[22] = usbdata.adc[0][6]; // X-fader, only on left deck
 	usbBuffer[23] = usbdata.adc[0][6]>>8;
-	
+
 	// Right deck pots - 6 pots
 	usbBuffer[24] = usbdata.adc[1][0];
 	usbBuffer[25] = usbdata.adc[1][0]>>8;
@@ -99,7 +105,7 @@ void usbWriteBuffer()
 	usbBuffer[33] = usbdata.adc[1][4]>>8;
 	usbBuffer[34] = usbdata.adc[1][5];
 	usbBuffer[35] = usbdata.adc[1][5]>>8;
-	
+
 	// Mid deck pots - 8 pots
 	usbBuffer[36] = usbdata.adc[2][0];
 	usbBuffer[37] = usbdata.adc[2][0]>>8;

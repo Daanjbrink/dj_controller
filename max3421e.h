@@ -7,6 +7,6 @@
 
 void _max3421eInit();
 
-uint16_t _max3421eRegister(uint8_t reg, uint8_t val, uint8_t read);
+void _max3421eWriteBulk(uint8_t infifo, uint8_t *buffer, uint8_t len);
 
 #endif
