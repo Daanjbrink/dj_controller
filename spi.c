@@ -4,7 +4,7 @@
 
 void spiInit()
 {
-	DDRB = (1<<MOSI)|(1<<SCK); // Set all pins as output except MISO
+	DDRB = (1<<MOSI)|(1<<SCK); // Set all SPI pins as output except MISO
 	DDRA = (1<<EXP0)|(1<<EXP1)|(1<<EXP2)|(1<<EXP3)|(1<<USB0)|(1<<ADC0)|(1<<ADC1)|(1<<ADC2); // Set chip select pins as output
 	PORTA = (1<<EXP0)|(1<<EXP1)|(1<<EXP2)|(1<<EXP3)|(1<<USB0)|(1<<ADC0)|(1<<ADC1)|(1<<ADC2); // Set chip select pins high
 	SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0); // SPI enable, Master mode, SPR0 for Fosc/8

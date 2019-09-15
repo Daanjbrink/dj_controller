@@ -51,6 +51,6 @@ void _max3421eInit()
 void _max3421eWriteBulk(uint8_t infifo, uint8_t *buffer, uint8_t len)
 {
 	_max3421eRegisterBuffer(infifo, buffer, len, 0); // Write IN FIFO buffer
-	_max3421eRegister(infifo+5, len, 0); // Write FIFO bytecount register which arms the endpoint for transfer
+	_max3421eRegister(infifo+5, len, 0); // Write IN FIFO bytecount register which arms the endpoint for transfer
 										 // The bytecount registers are 5 addresses higher than the FIFO register addresses
 }

@@ -20,10 +20,10 @@ int main()
 	
 	// Init all hardware
 	spiInit();
-	//usbInit
+	usbInit();
 	expInit();
 	
-	sei();
+	sei(); // Enable global interrupts
 	
     while (1)
 	{

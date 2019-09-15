@@ -22,7 +22,7 @@ void expInit()
 	}
 
 	// Rotary encoders EXP3
-	_mcp23s17IOPU(EXP3, B, 0xFF); // Enable internal pull ups on deck B every pin
+	_mcp23s17IOPU(EXP3, B, 0xFF); // Enable internal pull ups on deck B on every pin
 	_mcp23s17INTEN(EXP3, BOTH, 0xFF); // Enable interrupt-on-change on every pin
 
 	// Init current encoder state
@@ -96,6 +96,7 @@ __attribute__((optimize("O3"))) ISR(PCINT2_vect)
 	else if(reg&128)
 		pin = 7;
 
+	// Rotary encoders
 	if(exp == EXP3 && ab == A){
 		switch(pin){
 			case 2:

@@ -13,6 +13,7 @@ struct USBDATA {
 
 uint8_t usbBuffer[51];
 
+void usbInit();
 void usbBtnUpdate(uint8_t exp, uint8_t pin);
 void usbAdcUpdate(uint8_t adc, uint8_t channel);
 void usbWriteBuffer();
