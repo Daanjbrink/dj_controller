@@ -15,7 +15,7 @@ static uint8_t byteArrayToByte(uint8_t *array)
 
 void usbInit()
 {
-	_max3421eInit();
+	_max3421eInit(); // Init devices critical features
 }
 
 // Map IO expander number and pin number to usb buffer index
@@ -49,7 +49,10 @@ void usbAdcUpdate(uint8_t adc, uint8_t channel)
 
 void usbWriteBuffer()
 {
-	_max3421eWriteBulk(2, usbBuffer, sizeof(usbBuffer));
+	// Checks if FIFO 2 is ready to be filled
+	if(_max3421eEPIRQ(2, 0)){
+		_max3421eWriteBulk(2, usbBuffer, sizeof(usbBuffer)); // Fill FIFO 2
+	}
 }
 
 /*void usbWriteStruct()

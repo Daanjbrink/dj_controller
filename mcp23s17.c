@@ -66,10 +66,12 @@ uint8_t _mcp23s17INTF(uint8_t pin);
 
 uint8_t _mcp23s17INTCAP(uint8_t exp, uint8_t ab)
 {
+	uint8_t reg = 0xFF;
 	if(ab&1)
-		return _mcp23s17Register(exp, 0x10, 0, 1);
+		reg = 0x10;
 	else if(ab&2)
-		return _mcp23s17Register(exp, 0x11, 0, 1);
+		reg = 0x11;
+	return _mcp23s17Register(exp, reg, 0, 1);
 }
 
 uint8_t _mcp23s17GPIO(uint8_t exp, uint8_t ab, uint8_t pin, uint8_t read)
