@@ -5,6 +5,8 @@
 
 #include "usb.h"
 
+#define CONNECT 3
+
 void _max3421eInit();
 
 void _max3421eWriteBulk(uint8_t infifo, uint8_t *buffer, uint8_t len);
@@ -12,5 +14,6 @@ void _max3421eReadBulk(uint8_t outfifo, uint8_t* buffer, uint8_t len);
 
 uint8_t _max3421eEPIRQ(uint8_t fifo, uint8_t inout);
 void _max3421eEPIEN(uint8_t bitmask);
+void _max3421eUSBCTL(uint8_t bitmask);
 
 #endif

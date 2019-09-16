@@ -3,11 +3,12 @@
 
 #include "usb.h"
 #include "max3421e.h"
+#include "max3421eSetup.h"
 #include "spi.h"
 
 static uint16_t _max3421eRegister(uint8_t reg, uint8_t val, uint8_t read)
 {
-	uint8_t buffer[2] = {((reg&0b1111)<<3)|((!read) ? 2 : 0)|1, // Set register address in bits 7..3, set bit 2 for writing or unset for reading, set bit 1 for ackstat
+	uint8_t buffer[2] = {((reg&0b1111)<<3)|((read) ? 0 : 2)|1, // Set register address in bits 7..3, set bit 2 for writing or unset for reading, set bit 1 for ackstat
 						val}; // Data byte
 
 	uint8_t status, regval;
@@ -41,6 +42,7 @@ static uint8_t _max3421eRegisterBuffer(uint8_t reg, uint8_t *data, uint8_t len, 
 void _max3421eInit()
 {
 	_max3421eRegister(17, (1<<4), 0); // Set SPI in full-duplex mode
+	_max3421eSetupUsb();
 }
 
 // infifo is the FIFO register used to transfer outgoing data
@@ -57,14 +59,9 @@ void _max3421eWriteBulk(uint8_t infifo, uint8_t *buffer, uint8_t len)
 void _max3421eReadBulk(uint8_t outfifo, uint8_t* buffer, uint8_t len)
 {
 	uint8_t bytecount = _max3421eRegister(outfifo+5, 0, 1); // Read byte count
-	bytecount = (bytecount > len ? len : bytecount); // bytecount <= len
+	bytecount = (bytecount > len ? len : bytecount); // bytecount is less or equal to len
 	_max3421eRegisterBuffer(outfifo, buffer, bytecount, 1); // Read OUT FIFO buffer
 	_max3421eRegister(11, (1<<(outfifo+1)), 0); // Write '1' to DAV IRQ register. Bits used are b1 or b2
-}
-
-void _max3421SUDFIFO(uint8_t *buffer)
-{
-	_max3421eReadBulk(4, buffer, 8); // Read SUDFIFO buffer
 }
 
 // Checks if specified IRQ flag is set
@@ -91,4 +88,10 @@ uint8_t _max3421eEPIRQ(uint8_t fifo, uint8_t inout)
 void _max3421eEPIEN(uint8_t bitmask)
 {
 	_max3421eRegister(12, bitmask, 0);
+}
+
+// Writes to the USBCTL register
+void _max3421eUSBCTL(uint8_t bitmask)
+{
+	_max3421eRegister(15, bitmask, 0);
 }
