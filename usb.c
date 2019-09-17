@@ -1,7 +1,10 @@
+#include <avr/interrupt.h>
+
 #include <stdint.h>
 
 #include "usb.h"
 #include "max3421e.h"
+#include "max3421eSetup.h"
 #include "spi.h"
 
 // Transfer byte array of 8 bytes containing only '1' or '0' to 1 byte
@@ -15,7 +18,7 @@ static uint8_t byteArrayToByte(uint8_t *array)
 
 void usbInit()
 {
-	_max3421eInit(); // Init devices critical features
+	max3421eInit(); // Init devices critical features
 }
 
 // Map IO expander number and pin number to usb buffer index
@@ -50,9 +53,14 @@ void usbAdcUpdate(uint8_t adc, uint8_t channel)
 void usbWriteBuffer()
 {
 	// Checks if FIFO 2 is ready to be filled
-	if(_max3421eEPIRQ(2, 0)){
-		_max3421eWriteBulk(2, usbBuffer, sizeof(usbBuffer)); // Fill FIFO 2
+	if(max3421eEPIRQ(2, 0)){
+		max3421eWriteBuffer(2, usbBuffer, sizeof(usbBuffer)); // Fill FIFO 2
 	}
+}
+
+ISR(INT0_vect)
+{
+	max3421eSetupUsb();
 }
 
 /*void usbWriteStruct()
